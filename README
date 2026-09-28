@@ -20,3 +20,26 @@ include:
 	lwp.h:    header for the LWP library
 	snakes.h: header for the snakes library
 
+===========================================================================================================================================
+
+Contents of lwp.c
+
+lwp_create()
+Creates a new thread and admits it to the current scheduler. The thread’s resources will consist
+of a context and stack, both initialized so that when the scheduler chooses this thread and its context is loaded via swap_rfiles it will run the given function. This may be called by any thread.
+
+lwp_start()
+Starts the threading system by converting the calling thread—the original system thread—into a
+LWP by allocating a context for it and admitting it to the scheduler, and yields control to whichever thread the scheduler indicates. It is not necessary to allocate a stack for this thread since it already has one.
+
+lwp_yield()
+Yields control to the next thread as indicated by the scheduler. If there is no next thread, calls
+exit(3) with the termination status of the calling thread (see below).
+
+lwp_exit(int status)
+Terminates the calling thread. Its termination status becomes the low 8 bits of the passed integer. The thread’s resources will be deallocated once it is waited for in lwp_wait(). Yields control to the next thread using lwp_yield().
+
+lwp_wait(int *status)
+Deallocates the resources of a terminated LWP. If no LWPs have terminated and there still exist
+runnable threads, blocks until one terminates. If status of the terminated thread is non-NULL, *status is populated with its termination status. Returns the tid of the terminated thread or NO_THREAD if it would block forever because there are no more runnable threads that could terminate.
+
